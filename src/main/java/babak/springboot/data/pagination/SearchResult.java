@@ -17,7 +17,7 @@ import java.util.function.Function;
 @AllArgsConstructor
 public class SearchResult<T> {
 
-    public final static SearchResult EMPTY = new SearchResult<>();
+    public static final SearchResult<?> EMPTY = new SearchResult<>();
 
     public SearchResult() {
         this.page = 0;

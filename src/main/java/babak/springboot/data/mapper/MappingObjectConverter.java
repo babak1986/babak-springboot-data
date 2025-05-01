@@ -1,6 +1,7 @@
 package babak.springboot.data.mapper;
 
 import babak.springboot.data.converter.FieldConverter;
+import babak.springboot.data.exception.MappingObjectException;
 import babak.springboot.data.reflection.ReflectionUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,9 @@ import java.util.Map;
  * Email: behzadi.babak@gmail.com
  **/
 public class MappingObjectConverter {
+
+    private MappingObjectConverter() {
+    }
 
     public static Map<String, Object> convert(Object originalObject) {
         MappingFields mappingFields = originalObject.getClass().getAnnotation(MappingFields.class);
@@ -37,7 +41,7 @@ public class MappingObjectConverter {
                                     mappingField.mappedFieldName(),
                             FieldConverter.convert(mappingField.converterType(), value));
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw new MappingObjectException(e.getMessage());
                 }
             });
             return converted;

@@ -1,9 +1,10 @@
 package babak.springboot.data.pagination;
 
+import babak.springboot.data.exception.SearchPredicateException;
+import babak.springboot.data.reflection.ReflectionUtil;
 import babak.springboot.data.search.SearchField;
 import babak.springboot.data.search.SearchLogic;
 import babak.springboot.data.search.SearchSort;
-import babak.springboot.data.reflection.ReflectionUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -74,12 +75,13 @@ public class SearchPage {
                         };
                         return predicate;
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        throw new SearchPredicateException(e.getMessage());
                     }
                 }).toList();
-        return predicates.size() > 0 ?
-                predicates.stream().reduce(o -> logic == SearchLogic.AND, (p1, p2) -> logic(p1, p2, logic))
-                        .test(reference): true;
+        return predicates.isEmpty() ||
+                predicates.stream()
+                        .reduce(o -> logic == SearchLogic.AND, (p1, p2) -> logic(p1, p2, logic))
+                        .test(reference);
     }
 
     private Predicate logic(Predicate predicate1, Predicate predicate2, SearchLogic logic) {

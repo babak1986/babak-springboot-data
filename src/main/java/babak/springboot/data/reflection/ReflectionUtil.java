@@ -1,5 +1,9 @@
 package babak.springboot.data.reflection;
 
+import babak.springboot.data.exception.GetFieldTypeException;
+import babak.springboot.data.exception.GetFieldValueException;
+import babak.springboot.data.exception.GetSuperClassFieldValueException;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -12,6 +16,9 @@ import java.util.List;
  **/
 public class ReflectionUtil {
 
+    private ReflectionUtil() {
+    }
+
     public static List<Field> getFieldsByAnnotation(Class<?> targetClass, Class<? extends Annotation> annotation) {
         List<Field> fields = new ArrayList<>();
         fields.addAll(Arrays
@@ -21,7 +28,7 @@ public class ReflectionUtil {
         fields.addAll(Arrays
                 .stream(targetClass.getSuperclass().getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(annotation) &&
-                        !fields.stream().anyMatch(f -> f.getName().equals(field.getName())))
+                        fields.stream().noneMatch(f -> f.getName().equals(field.getName())))
                 .toList());
         return fields;
     }
@@ -41,22 +48,24 @@ public class ReflectionUtil {
             Field field = getField(target.getClass(), fieldName);
             if (field != null) {
                 field.setAccessible(true);
-                return field.get(target);
+                Object v = field.get(target);
+                field.setAccessible(false);
+                return v;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new GetFieldValueException(e.getMessage());
         }
         return null;
     }
 
-    public static Class<?> getFieldType(Class targetClass, String fieldName) {
+    public static Class<?> getFieldType(Class<?> targetClass, String fieldName) {
         try {
             Field field = getField(targetClass, fieldName);
             if (field != null) {
                 return field.getType();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new GetFieldTypeException(e.getMessage());
         }
         return null;
     }
@@ -72,10 +81,12 @@ public class ReflectionUtil {
             }
             if (field != null) {
                 field.setAccessible(true);
-                return field.get(target);
+                Object v = field.get(target);
+                field.setAccessible(false);
+                return v;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new GetSuperClassFieldValueException(e.getMessage());
         }
         return null;
     }

@@ -1,6 +1,7 @@
 package babak.springboot.data.search;
 
 import babak.springboot.data.domain.BaseEntity;
+import babak.springboot.data.exception.SearchFieldToPredicateException;
 import babak.springboot.data.exception.ValueIsNotArrayException;
 import babak.springboot.data.reflection.ReflectionUtil;
 import jakarta.persistence.criteria.*;
@@ -9,7 +10,6 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Author: Babak Behzadi
@@ -70,6 +70,7 @@ public abstract class SearchFilterModel<E extends BaseEntity> {
                             path = root.join(annotation.relation()).get(annotation.column());
                         }
                         Object value = field.get(this);
+                        field.setAccessible(false);
                         return criteriaBuilder.and(switch (annotation.operand()) {
                             case EQ -> criteriaBuilder.equal(path, value);
                             case NOT_EQ -> criteriaBuilder.notEqual(path, value);
@@ -89,12 +90,10 @@ public abstract class SearchFilterModel<E extends BaseEntity> {
                             case NOT_LIKE -> criteriaBuilder.notLike(path, likeExpr(value, SearchOperand.NOT_LIKE));
                             case STARTS_WITH -> criteriaBuilder.like(path, likeExpr(value, SearchOperand.STARTS_WITH));
                             case ENDS_WITH -> criteriaBuilder.like(path, likeExpr(value, SearchOperand.ENDS_WITH));
-                            default -> throw new RuntimeException("Invalid search operand");
                         });
                     } catch (Exception e) {
-                        throw new RuntimeException(e.getMessage());
+                        throw new SearchFieldToPredicateException(e.getMessage());
                     }
-                })
-                .collect(Collectors.toList());
+                }).toList();
     }
 }

@@ -9,6 +9,9 @@ import java.util.Date;
  **/
 public class FieldConverter {
 
+    private FieldConverter() {
+    }
+
     public static Object convert(FieldConverterType type, Object object) {
         if (object == null) {
             return null;

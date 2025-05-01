@@ -18,6 +18,9 @@ import java.util.List;
  **/
 public class ListPaginator {
 
+    private ListPaginator() {
+    }
+
     public static <T> Page<T> page(final Pageable pageable, List<T> list) {
         int first = Math.min(Long.valueOf(pageable.getOffset()).intValue(), list.size());
         int last = Math.min(first + pageable.getPageSize(), list.size());
@@ -27,7 +30,7 @@ public class ListPaginator {
     public static <T> List<T> sort(SearchSort sort, List<T> list) {
         List<T> l = new ArrayList<>(list);
         Collections.sort(l, (o1, o2) -> {
-            Class fieldType = ReflectionUtil.getFieldType(o1.getClass(), sort.getField());
+            Class<?> fieldType = ReflectionUtil.getFieldType(o1.getClass(), sort.getField());
             if (fieldType != null) {
                 Object val1 = ReflectionUtil.getFieldValue(o1, sort.getField());
                 Object val2 = ReflectionUtil.getFieldValue(o2, sort.getField());

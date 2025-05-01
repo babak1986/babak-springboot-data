@@ -48,7 +48,7 @@ public abstract class BaseEntity<PK extends Serializable> {
             return false;
         } else {
             BaseEntity<PK> that = (BaseEntity<PK>) obj;
-            return this.getId() == null ? false : this.getId().equals(that.getId());
+            return this.getId() != null && this.getId().equals(that.getId());
         }
     }
 

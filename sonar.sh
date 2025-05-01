@@ -1,0 +1,1 @@
+mvn clean verify sonar:sonar -Dsonar.projectKey=babak-springboot-data -Dsonar.projectName='babak-springboot-data' -Dsonar.host.url=http://localhost:9967 -Dsonar.token=sqp_6a4909ecd13d5b80d7b234d02f498b1154f903a1

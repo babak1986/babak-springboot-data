@@ -11,10 +11,10 @@ import java.util.LinkedHashMap;
  **/
 public abstract class BaseModel<PK extends Serializable, E extends BaseEntity> extends LinkedHashMap<String, Object> {
 
-    public BaseModel() {
+    protected BaseModel() {
     }
 
-    public BaseModel(E e) {
+    protected BaseModel(E e) {
         put("id", e.getId());
         map(e);
     }
